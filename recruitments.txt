@@ -1,0 +1,7 @@
+## Python Dependencies
+- streamlit
+- pandas
+- matplotlib
+- mplsoccer
+- opencv-python
+- ultralytics
