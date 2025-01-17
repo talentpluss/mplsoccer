@@ -1,75 +1,39 @@
 import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
-from mplsoccer import Pitch
-import os
-
-# Page Configuration
-st.set_page_config(page_title="YOLO Soccer Movement", layout="wide")
-
-# Tabs for the application
-tabs = ["Upload Video", "Single Video Output", "All Videos Output"]
-selected_tab = st.sidebar.radio("Navigation", tabs)
-
-if selected_tab == "Upload Video":
-    st.title("Upload and Process Video")
-    uploaded_video = st.file_uploader("Upload a Soccer Video", type=["mp4", "avi"])
-
-    if uploaded_video is not None:
-        st.video(uploaded_video)
-        st.success("Video uploaded successfully!")
-        
-        # Placeholder for processing logic
-        st.info("Video processing feature is under construction.")
-
-elif selected_tab == "Single Video Output":
-    st.title("Single Video Output")
-
-    # File uploader for CSV
-    uploaded_csv = st.file_uploader("Upload CSV for Single Video", type=["csv"])
-
-    if uploaded_csv is not None:
-        # Load data
-        df = pd.read_csv(uploaded_csv)
-        st.write("Preview of the data:", df.head())
-
-        # Normalize data for pitch
-        width, height = 120, 80  # Dimensions of the pitch in meters
-        df["pitch_x"] = df["centroid_x"] / df["centroid_x"].max() * width
-        df["pitch_y"] = df["centroid_y"] / df["centroid_y"].max() * height
-
-        # Plot using mplsoccer
         pitch = Pitch(pitch_type='statsbomb', pitch_color='grass', line_color='white')
-        fig, ax = plt.subplots(figsize=(12, 8))
-        pitch.draw(ax=ax)
-        pitch.scatter(df["pitch_x"], df["pitch_y"], ax=ax, s=30, c='red', edgecolors='black')
-
+        fig, ax = pitch.draw(figsize=(12, 8))
+        pitch.scatter(trajectories["pitch_x"], trajectories["pitch_y"], ax=ax, s=30, c='red', edgecolors='black')
         st.pyplot(fig)
 
-elif selected_tab == "All Videos Output":
-    st.title("All Videos Output")
+# Tab 2: Single Video Analysis
+with tabs[1]:
+    st.header("Single Video Analysis")
+    uploaded_csv = st.file_uploader("Upload a CSV File", type=["csv"])
 
-    # File uploader for CSV
-    uploaded_csv = st.file_uploader("Upload CSV for All Videos", type=["csv"])
-
-    if uploaded_csv is not None:
-        # Load data
+    if uploaded_csv:
         df = pd.read_csv(uploaded_csv)
-        st.write("Preview of the data:", df.head())
+        st.write(df.head())
 
-        # Normalize data for pitch
-        width, height = 120, 80  # Dimensions of the pitch in meters
-        df["pitch_x"] = df["centroid_x"] / df["centroid_x"].max() * width
-        df["pitch_y"] = df["centroid_y"] / df["centroid_y"].max() * height
+        df["pitch_x"] = df["centroid_x"] / 1920 * 120  # Adjust width as per video dimensions
+        df["pitch_y"] = df["centroid_y"] / 1080 * 80   # Adjust height as per video dimensions
 
-        # Plot using mplsoccer
         pitch = Pitch(pitch_type='statsbomb', pitch_color='grass', line_color='white')
-        fig, ax = plt.subplots(figsize=(12, 8))
-        pitch.draw(ax=ax)
+        fig, ax = pitch.draw(figsize=(12, 8))
         pitch.scatter(df["pitch_x"], df["pitch_y"], ax=ax, s=30, c='blue', edgecolors='black')
-
         st.pyplot(fig)
 
-else:
-    st.error("Invalid tab selected.")
+# Tab 3: Combined Analysis
+with tabs[2]:
+    st.header("Combined Video Analysis")
+    combined_csv = st.file_uploader("Upload Combined CSV File", type=["csv"])
 
+    if combined_csv:
+        df = pd.read_csv(combined_csv)
+        st.write(df.head())
+
+        df["pitch_x"] = df["centroid_x"] / 1920 * 120
+        df["pitch_y"] = df["centroid_y"] / 1080 * 80
+
+        pitch = Pitch(pitch_type='statsbomb', pitch_color='grass', line_color='white')
+        fig, ax = pitch.draw(figsize=(12, 8))
+        pitch.scatter(df["pitch_x"], df["pitch_y"], ax=ax, s=20, c='green', edgecolors='black')
+        st.pyplot(fig)
