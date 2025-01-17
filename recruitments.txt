@@ -4,3 +4,4 @@ matplotlib
 mplsoccer
 opencv-python
 ultralytics
+opencv-python-headless==4.5.1.48
