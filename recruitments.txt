@@ -1,7 +1,6 @@
-## Python Dependencies
-- streamlit
-- pandas
-- matplotlib
-- mplsoccer
-- opencv-python
-- ultralytics
+streamlit
+pandas
+matplotlib
+mplsoccer
+opencv-python
+ultralytics
