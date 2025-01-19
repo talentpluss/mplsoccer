@@ -124,17 +124,26 @@ with tabs[1]:
 
 # Tab 3: Combined Analysis
 with tabs[2]:
+    # Tab 3: Combined Video Analysis
     st.header("Combined Video Analysis")
-    combined_csv = st.file_uploader("Upload Combined CSV File", type=["csv"])
-
-    if combined_csv:
-        df = pd.read_csv(combined_csv)
-        st.write(df.head())
-
-        df["pitch_x"] = df["centroid_x"] / 1920 * 120
-        df["pitch_y"] = df["centroid_y"] / 1080 * 80
-
-        pitch = Pitch(pitch_type='statsbomb', pitch_color='grass', line_color='white')
-        fig, ax = pitch.draw(figsize=(12, 8))
-        pitch.scatter(df["pitch_x"], df["pitch_y"], ax=ax, s=20, c='green', edgecolors='black')
-        st.pyplot(fig)
+    
+    # Read the combined CSV file directly
+    csv_file_path = "allvideo.csv"  # Pastikan file ini berada di lokasi yang sama dengan script
+    df = pd.read_csv(csv_file_path)
+    
+    # Display the first few rows of the dataset
+    st.write("Combined Data Preview:")
+    st.write(df.head())
+    
+    # Calculate pitch coordinates
+    df["pitch_x"] = df["centroid_x"] / 1920 * 120  # Adjust width as per video dimensions
+    df["pitch_y"] = df["centroid_y"] / 1080 * 80   # Adjust height as per video dimensions
+    
+    # Plotting on a soccer pitch
+    st.write("Soccer Field Visualization:")
+    pitch = Pitch(pitch_type='statsbomb', pitch_color='grass', line_color='white')
+    fig, ax = pitch.draw(figsize=(12, 8))
+    pitch.scatter(df["pitch_x"], df["pitch_y"], ax=ax, s=20, c='green', edgecolors='black')
+    
+    # Display the plot
+    st.pyplot(fig)
