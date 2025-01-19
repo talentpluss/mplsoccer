@@ -7,9 +7,6 @@ from ultralytics import YOLO
 import tempfile
 import os
 
-# Initialize YOLO model
-model = YOLO("yolov5s.pt")  # Replace with custom model if needed
-
 # Streamlit App
 st.set_page_config(page_title="Player Movement Analysis", layout="wide")
 st.title("Player Movement Analysis App")
