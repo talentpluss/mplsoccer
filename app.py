@@ -17,24 +17,6 @@ st.title("Player Movement Analysis App")
 # Tabs for the interface
 tabs = st.tabs(["Upload and Process Video", "Single Video Analysis", "Combined Analysis"])
 
-import streamlit as st
-import pandas as pd
-import cv2
-import tempfile
-from mplsoccer import Pitch
-from ultralytics import YOLO
-import os
-
-# Initialize YOLO model
-model = YOLO("yolov5s.pt")  # Default YOLOv5 model
-
-# Streamlit App
-st.set_page_config(page_title="Player Movement Analysis", layout="wide")
-st.title("Player Movement Analysis App")
-
-# Tabs for the interface
-tabs = st.tabs(["Upload and Process Video", "Single Video Analysis", "Combined Analysis"])
-
 # Tab 1: Upload and Process Video
 with tabs[0]:
     st.header("Upload and Process Video")
@@ -103,8 +85,7 @@ with tabs[0]:
         fig, ax = pitch.draw(figsize=(12, 8))
         pitch.scatter(trajectories["pitch_x"], trajectories["pitch_y"], ax=ax, s=30, c='red', edgecolors='black')
         st.pyplot(fig)
-
-
+        
 # Tab 2: Single Video Analysis
 with tabs[1]:
     # Tab 2: Single Video Analysis
