@@ -17,6 +17,24 @@ st.title("Player Movement Analysis App")
 # Tabs for the interface
 tabs = st.tabs(["Upload and Process Video", "Single Video Analysis", "Combined Analysis"])
 
+import streamlit as st
+import pandas as pd
+import cv2
+import tempfile
+from mplsoccer import Pitch
+from ultralytics import YOLO
+import os
+
+# Initialize YOLO model
+model = YOLO("yolov5s.pt")  # Default YOLOv5 model
+
+# Streamlit App
+st.set_page_config(page_title="Player Movement Analysis", layout="wide")
+st.title("Player Movement Analysis App")
+
+# Tabs for the interface
+tabs = st.tabs(["Upload and Process Video", "Single Video Analysis", "Combined Analysis"])
+
 # Tab 1: Upload and Process Video
 with tabs[0]:
     st.header("Upload and Process Video")
@@ -50,15 +68,19 @@ with tabs[0]:
 
             for result in results:
                 for box in result.boxes:
-                    x1, y1, x2, y2, conf, cls = box.xyxy[0]
+                    # Extract bounding box coordinates and confidence
+                    x1, y1, x2, y2 = box.xyxy[0]  # Bounding box coordinates
+                    conf = box.conf[0].item()     # Confidence score
+                    cls = box.cls[0].item()       # Class label
+
                     detections.append({
                         "frame": int(cap.get(cv2.CAP_PROP_POS_FRAMES)),
                         "x1": x1.item(),
                         "y1": y1.item(),
                         "x2": x2.item(),
                         "y2": y2.item(),
-                        "confidence": conf.item(),
-                        "class": cls.item()
+                        "confidence": conf,
+                        "class": cls
                     })
 
         cap.release()
@@ -81,6 +103,7 @@ with tabs[0]:
         fig, ax = pitch.draw(figsize=(12, 8))
         pitch.scatter(trajectories["pitch_x"], trajectories["pitch_y"], ax=ax, s=30, c='red', edgecolors='black')
         st.pyplot(fig)
+
 
 # Tab 2: Single Video Analysis
 with tabs[1]:
