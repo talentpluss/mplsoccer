@@ -33,39 +33,41 @@ with tabs[0]:
         st.video(video_path)
         st.write("Processing video...")
 
-        # Read the video
-        cap = cv2.VideoCapture(video_path)
-        width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-        height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        # Use a spinner to indicate that processing is in progress
+        with st.spinner("Processing video, please wait..."):
+            # Read the video
+            cap = cv2.VideoCapture(video_path)
+            width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+            height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
-        detections = []
+            detections = []
 
-        while cap.isOpened():
-            ret, frame = cap.read()
-            if not ret:
-                break
+            while cap.isOpened():
+                ret, frame = cap.read()
+                if not ret:
+                    break
 
-            # Perform YOLO detection on the frame
-            results = model(frame)
+                # Perform YOLO detection on the frame
+                results = model(frame)
 
-            for result in results:
-                for box in result.boxes:
-                    # Extract bounding box coordinates and confidence
-                    x1, y1, x2, y2 = box.xyxy[0]  # Bounding box coordinates
-                    conf = box.conf[0].item()     # Confidence score
-                    cls = box.cls[0].item()       # Class label
+                for result in results:
+                    for box in result.boxes:
+                        # Extract bounding box coordinates and confidence
+                        x1, y1, x2, y2 = box.xyxy[0]  # Bounding box coordinates
+                        conf = box.conf[0].item()     # Confidence score
+                        cls = box.cls[0].item()       # Class label
 
-                    detections.append({
-                        "frame": int(cap.get(cv2.CAP_PROP_POS_FRAMES)),
-                        "x1": x1.item(),
-                        "y1": y1.item(),
-                        "x2": x2.item(),
-                        "y2": y2.item(),
-                        "confidence": conf,
-                        "class": cls
-                    })
+                        detections.append({
+                            "frame": int(cap.get(cv2.CAP_PROP_POS_FRAMES)),
+                            "x1": x1.item(),
+                            "y1": y1.item(),
+                            "x2": x2.item(),
+                            "y2": y2.item(),
+                            "confidence": conf,
+                            "class": cls
+                        })
 
-        cap.release()
+            cap.release()
 
         # Convert detections to a DataFrame
         detections_df = pd.DataFrame(detections)
@@ -80,12 +82,13 @@ with tabs[0]:
         trajectories["pitch_y"] = trajectories["centroid_y"] / height * 80  # Adjust height to 80 meters
 
         # Visualize centroids on soccer pitch
+        st.success("Video processing completed!")
         st.write("Soccer Field Visualization:")
         pitch = Pitch(pitch_type='statsbomb', pitch_color='grass', line_color='white')
         fig, ax = pitch.draw(figsize=(12, 8))
         pitch.scatter(trajectories["pitch_x"], trajectories["pitch_y"], ax=ax, s=30, c='red', edgecolors='black')
         st.pyplot(fig)
-        
+
 # Tab 2: Single Video Analysis
 with tabs[1]:
     # Tab 2: Single Video Analysis
